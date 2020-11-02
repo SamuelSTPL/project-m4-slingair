@@ -4,15 +4,30 @@ import styled from "styled-components";
 import { themeVars } from "../GlobalStyles";
 
 const Plane = ({ flightNumber, handleSeatSelect, selectedSeat }) => {
+  // console.log(flightNumber);
   const [seating, setSeating] = useState([]);
 
   useEffect(() => {
-    // TODO: get seating data for selected flight
+    const getAllSeatings = async () => {
+      if (flightNumber) {
+        let reponse = await fetch(`/flight/${flightNumber}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let response = await reponse.json();
+        setSeating(response.data);
+        // console.log(response);
+      }
+    };
+    getAllSeatings();
   }, [flightNumber]);
 
+  // console.log(seating);
   return (
     <Wrapper>
-      {flightNumber && seating && seating.length > 0 ? (
+      {flightNumber && seating.length > 0 ? (
         seating.map((seat) => (
           <SeatWrapper key={`seat-${seat.id}`}>
             <label>

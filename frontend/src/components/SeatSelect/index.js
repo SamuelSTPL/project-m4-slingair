@@ -22,6 +22,7 @@ const SeatSelect = ({ updateUserReservation }) => {
 
   const handleFlightSelect = (ev) => {
     setFlightNumber(ev.target.value);
+    setFormData({ ...formData, flight: ev.target.value });
   };
 
   const handleSeatSelect = (seatId) => {
@@ -40,13 +41,48 @@ const SeatSelect = ({ updateUserReservation }) => {
       emailParts[1].length > 0
     );
   };
-
+  // console.log(JSON.stringify(formData));
   const handleSubmit = (ev) => {
     ev.preventDefault();
     if (validateEmail()) {
       // TODO: Send data to the server for validation/submission
-      // TODO: if 201, add reservation id (received from server) to localStorage
-      // TODO: if 201, redirect to /confirmed (push)
+      const sendFormData = async () => {
+        let response = await fetch("/reservation", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        let res = await response.json();
+        let data = res.data;
+        // console.log(res);
+
+        // TODO: if 201, add reservation id (received from server) to localStorage
+        // TODO: if 201, redirect to /confirmed (push)
+        if (res.status === 200) {
+          // let reservationInfos = { ...res.data };
+          // console.log(reservationInfos);
+          const { email, flight, givenName, id, seat, surname } = data;
+          // localStorage.setItem({
+          //   email: email,
+          //   flight: flight,
+          //   givenName: givenName,
+          //   id: id,
+          //   seat: seat,
+          //   surname: surname,
+          // });
+          localStorage.setItem("email", email);
+          localStorage.setItem("flight", flight);
+          localStorage.setItem("givenName", givenName);
+          localStorage.setItem("id", id);
+          localStorage.setItem("seat", seat);
+          localStorage.setItem("surname", surname);
+          history.push("/confirmed");
+        }
+      };
+      sendFormData();
       // TODO: if error from server, show error to user (stretch goal)
     }
   };

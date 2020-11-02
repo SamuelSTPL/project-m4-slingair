@@ -34,6 +34,8 @@ const getFlight = (req, res) => {
 ///////////////////////////////////
 const addReservations = (req, res) => {
   let newReservation = req.body;
+  newReservation.id = uuidv4();
+  console.log(req.body);
   let isExistingReservation = reservations.some((reservation) => {
     return reservation.id == newReservation.id;
   });
@@ -66,7 +68,6 @@ const addReservations = (req, res) => {
     //Create new ID, switch the seat to not available, add the new reservation
   } else {
     seatToCheck.isAvailable = false;
-    newReservation.id = uuidv4();
     reservations.push(newReservation);
     res
       .status(200)
